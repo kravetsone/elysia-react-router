@@ -1,4 +1,4 @@
-import fs from 'node:fs';
+import fs from "node:fs";
 
 export const universalGlob = (pattern: string) => {
   if (typeof Bun !== "undefined") {
