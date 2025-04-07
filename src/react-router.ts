@@ -1,10 +1,11 @@
 import { join } from "node:path";
 import { join as joinPosix } from "node:path/posix";
-import { Elysia, type AnyElysia, type InferContext } from "elysia";
+import { Elysia, file, type AnyElysia, type InferContext } from "elysia";
 import { type AppLoadContext, createRequestHandler } from "react-router";
 
 import type { ViteDevServer } from "vite";
 import type { PluginOptions } from "./types";
+import { universalGlob } from "./utils";
 
 /**
  * Initializes and configures an Elysia server with React Router integration.
@@ -69,12 +70,12 @@ export async function reactRouter(
     };
   } else {
     const clientDirectory = join(buildDirectory, "client");
-    const glob = new Bun.Glob(`${clientDirectory}/**`);
-    for (const path of glob.scanSync()) {
+    const glob = universalGlob(`${clientDirectory}/**`);
+    for (const path of glob) {
       elysia.get(
         // TODO: find more nice way
         joinPosix(path.substring(clientDirectory.length)).replaceAll("\\", "/"),
-        () => new Response(Bun.file(path))
+        () => file(path),
       );
     }
   }

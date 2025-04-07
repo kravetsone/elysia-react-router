@@ -14,7 +14,13 @@
 	},
 	"homepage": "https://github.com/kravetsone/elysia-react-router",
 	"readme": "https://github.com/kravetsone/elysia-react-router",
-	"keywords": ["elysia", "elysia-plugin", "vite", "remix", "react-router"],
+	"keywords": [
+		"elysia",
+		"elysia-plugin",
+		"vite",
+		"remix",
+		"react-router"
+	],
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
@@ -56,8 +62,11 @@
 		}
 	},
 	"dependencies": {
-		"connect-to-web": "^0.0.3"
+		"connect-to-web": "^0.0.3",
+		"fast-glob": "^3.3.3"
 	},
 	"license": "MIT",
-	"files": ["dist"]
+	"files": [
+		"dist"
+	]
 }
