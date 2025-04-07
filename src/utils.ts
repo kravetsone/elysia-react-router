@@ -1,9 +1,9 @@
-import fg from "fast-glob";
+import fs from 'node:fs';
 
 export const universalGlob = (pattern: string) => {
   if (typeof Bun !== "undefined") {
-    return new Bun.Glob(pattern).scanSync();
+    return Array.from(new Bun.Glob(pattern).scanSync());
   }
 
-  return fg.globSync(pattern);
+  return fs.globSync(pattern);
 }
