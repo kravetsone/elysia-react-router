@@ -2,10 +2,11 @@ import { join } from "node:path";
 import { join as joinPosix } from "node:path/posix";
 import { createRequestHandler } from "@remix-run/node";
 import type { AppLoadContext } from "@remix-run/node";
-import { Elysia, type AnyElysia, type InferContext } from "elysia";
+import { Elysia, file, type AnyElysia, type InferContext } from "elysia";
 
 import type { ViteDevServer } from "vite";
 import type { PluginOptions } from "./types";
+import { universalGlob } from "./utils";
 
 /**
  * Initializes and configures an Elysia server with Remix integration.
@@ -75,12 +76,12 @@ export async function remix(
 		};
 	} else {
 		const clientDirectory = join(buildDirectory, "client");
-		const glob = new Bun.Glob(`${clientDirectory}/**`);
-		for (const path of glob.scanSync()) {
+		const glob = universalGlob(`${clientDirectory}/**`);
+		for (const path of glob) {
 			elysia.get(
 				// TODO: find more nice way
 				joinPosix(path.substring(clientDirectory.length)).replaceAll("\\", "/"),
-				() => new Response(Bun.file(path)),
+				() => file(path),
 			);
 		}
 	}
