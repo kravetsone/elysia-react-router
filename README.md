@@ -1,6 +1,6 @@
 # Elysia React Router and Remix
 
-Use [React Router v7](https://reactrouter.com/home) or [Remix](https://remix.run/) with [Elysia](https://elysiajs.com/) with `HMR` support! Closes a long-standing elysia plugin request https://github.com/elysiajs/elysia/issues/12
+Use [React Router v7](https://reactrouter.com/home) or [Remix](https://remix.run/) with [Elysia](https://elysiajs.com/) with `HMR` support and `Node` adapter support! Closes a long-standing elysia plugin request https://github.com/elysiajs/elysia/issues/12
 
 > [!IMPORTANT]
 >
