@@ -2,7 +2,7 @@ import { join } from "node:path";
 import { join as joinPosix } from "node:path/posix";
 import { createRequestHandler } from "@remix-run/node";
 import type { AppLoadContext } from "@remix-run/node";
-import { Elysia, file, type AnyElysia, type InferContext } from "elysia";
+import { type AnyElysia, Elysia, type InferContext, file } from "elysia";
 
 import type { ViteDevServer } from "vite";
 import type { PluginOptions } from "./types";
@@ -81,7 +81,8 @@ export async function remix(
 			elysia.get(
 				// TODO: find more nice way
 				joinPosix(path.substring(clientDirectory.length)).replaceAll("\\", "/"),
-				() => file(path),
+				() =>
+					options?.production?.wrapStaticResponse?.(file(path)) ?? file(path),
 			);
 		}
 	}

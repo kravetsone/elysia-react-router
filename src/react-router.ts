@@ -1,6 +1,6 @@
 import { join } from "node:path";
 import { join as joinPosix } from "node:path/posix";
-import { Elysia, file, type AnyElysia, type InferContext } from "elysia";
+import { type AnyElysia, Elysia, type InferContext, file } from "elysia";
 import { type AppLoadContext, createRequestHandler } from "react-router";
 
 import type { ViteDevServer } from "vite";
@@ -27,75 +27,76 @@ import { universalGlob } from "./utils";
  * ```
  */
 export async function reactRouter(
-  options?: PluginOptions<AppLoadContext>
+	options?: PluginOptions<AppLoadContext>,
 ): Promise<AnyElysia> {
-  const cwd = process.env.REMIX_ROOT ?? process.cwd();
-  const mode = options?.mode ?? process.env.NODE_ENV ?? "development";
-  const buildDirectory = join(cwd, options?.buildDirectory ?? "build");
-  const serverBuildPath = join(
-    buildDirectory,
-    "server",
-    options?.serverBuildFile ?? "index.js"
-  );
+	const cwd = process.env.REMIX_ROOT ?? process.cwd();
+	const mode = options?.mode ?? process.env.NODE_ENV ?? "development";
+	const buildDirectory = join(cwd, options?.buildDirectory ?? "build");
+	const serverBuildPath = join(
+		buildDirectory,
+		"server",
+		options?.serverBuildFile ?? "index.js",
+	);
 
-  const elysia = new Elysia({
-    name: "elysia-react-router",
-    seed: options,
-  });
+	const elysia = new Elysia({
+		name: "elysia-react-router",
+		seed: options,
+	});
 
-  let vite: ViteDevServer | undefined;
+	let vite: ViteDevServer | undefined;
 
-  if (mode !== "production") {
-    vite = await import("vite").then((vite) => {
-      return vite.createServer({
-        ...options?.vite,
-        server: {
-          ...options?.vite?.server,
-          middlewareMode: true,
-        },
-      });
-    });
-  }
+	if (mode !== "production") {
+		vite = await import("vite").then((vite) => {
+			return vite.createServer({
+				...options?.vite,
+				server: {
+					...options?.vite?.server,
+					middlewareMode: true,
+				},
+			});
+		});
+	}
 
-  let hooks = {};
+	let hooks = {};
 
-  if (vite) {
-    const { connectToWeb } = await import("connect-to-web");
-    hooks = {
-      beforeHandle: ({ request }: InferContext<typeof elysia>) => {
-        return connectToWeb((req, res, next) => {
-          vite.middlewares(req, res, next);
-        })(request.clone());
-      },
-    };
-  } else {
-    const clientDirectory = join(buildDirectory, "client");
-    const glob = universalGlob(`${clientDirectory}/**`);
-    for (const path of glob) {
-      elysia.get(
-        // TODO: find more nice way
-        joinPosix(path.substring(clientDirectory.length)).replaceAll("\\", "/"),
-        () => file(path),
-      );
-    }
-  }
+	if (vite) {
+		const { connectToWeb } = await import("connect-to-web");
+		hooks = {
+			beforeHandle: ({ request }: InferContext<typeof elysia>) => {
+				return connectToWeb((req, res, next) => {
+					vite.middlewares(req, res, next);
+				})(request.clone());
+			},
+		};
+	} else {
+		const clientDirectory = join(buildDirectory, "client");
+		const glob = universalGlob(`${clientDirectory}/**`);
+		for (const path of glob) {
+			elysia.get(
+				// TODO: find more nice way
+				joinPosix(path.substring(clientDirectory.length)).replaceAll("\\", "/"),
+				() =>
+					options?.production?.wrapStaticResponse?.(file(path)) ?? file(path),
+			);
+		}
+	}
 
-  elysia.all(
-    "*",
-    async function processRemixSSR(context) {
-      const handler = createRequestHandler(
-        vite
-          ? await vite.ssrLoadModule("virtual:react-router/server-build")
-          : await import(serverBuildPath),
-        mode
-      );
+	elysia.all(
+		"*",
+		async function processRemixSSR(context) {
+			const handler = createRequestHandler(
+				vite
+					? await vite.ssrLoadModule("virtual:react-router/server-build")
+					: await import(serverBuildPath),
+				mode,
+			);
 
-      const loadContext = await options?.getLoadContext?.(context);
+			const loadContext = await options?.getLoadContext?.(context);
 
-      return handler(context.request, loadContext);
-    },
-    hooks
-  );
+			return handler(context.request, loadContext);
+		},
+		hooks,
+	);
 
-  return elysia;
+	return elysia;
 }
