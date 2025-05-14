@@ -6,6 +6,10 @@ Use [React Router v7](https://reactrouter.com/home) or [Remix](https://remix.run
 >
 > [Migration to React Router v7 from Remix](https://reactrouter.com/upgrading/remix).
 
+> [!IMPORTANT]
+>
+> Currently, Bun has a bug in dev mode with assets. See https://github.com/kravetsone/elysia-react-router/issues/17
+
 ### Usage with React Router
 
 In `development` mode it uses [`vite`](https://vitejs.dev/guide/api-javascript.html) under the hood, and in `production` serves the build directory and performs SSR requests.
