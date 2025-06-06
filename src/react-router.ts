@@ -6,6 +6,7 @@ import { type AppLoadContext, createRequestHandler } from "react-router";
 import type { ViteDevServer } from "vite";
 import type { PluginOptions } from "./types";
 import { universalGlob } from "./utils";
+import { staticPlugin } from '@elysiajs/static'
 
 /**
  * Initializes and configures an Elysia server with React Router integration.
@@ -60,30 +61,26 @@ export async function reactRouter(
 	let hooks = {};
 
 	if (vite) {
-		const { connectToWeb } = await import("connect-to-web");
-		hooks = {
-			beforeHandle: ({ request }: InferContext<typeof elysia>) => {
-				return connectToWeb((req, res, next) => {
-					vite.middlewares(req, res, next);
-				})(request.clone());
-			},
-		};
+		elysia.use((await import('elysia-connect-middleware')).connect(vite.middlewares))
 	} else {
-		const clientDirectory = join(buildDirectory, "client");
-		const glob = universalGlob(`${clientDirectory}/**`);
-		for (const path of glob) {
-			elysia.get(
-				// TODO: find more nice way
-				joinPosix(path.substring(clientDirectory.length)).replaceAll("\\", "/"),
-				() =>
-					options?.production?.wrapStaticResponse?.(file(path)) ?? file(path),
-			);
-		}
+		elysia.use(
+		        staticPlugin({
+		            prefix: '/assets',
+		            assets: 'build/client/assets',
+		            headers: { 'Cache-Control': 'public, max-age=31536000, immutable' },
+			}),
+		).use(
+			staticPlugin({
+			    prefix: '/',
+            		    assets: 'build/client',
+            		    headers: { 'Cache-Control': 'public, max-age=3600' },
+			}),
+		)
 	}
 
 	elysia.all(
 		"*",
-		async function processRemixSSR(context) {
+		async context => {
 			const handler = createRequestHandler(
 				vite
 					? await vite.ssrLoadModule("virtual:react-router/server-build")
