@@ -35,10 +35,11 @@
 		"type": "bunx tsc --noEmit"
 	},
 	"devDependencies": {
+		"@elysiajs/static": "^1.3.0",
 		"@biomejs/biome": "^1.9.4",
 		"@types/bun": "^1.2.13",
 		"@types/node": "^22.15.18",
-		"elysia-connect-middleware": "^0.0.5",
+		"elysia-connect-middleware": "^0.0.6",
 		"pkgroll": "^2.12.2",
 		"typescript": "^5.8.3",
 		"react-router": "^7.6.0",
