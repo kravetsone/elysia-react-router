@@ -1,5 +1,4 @@
 import { join } from "node:path";
-import { join as joinPosix } from "node:path/posix";
 import { type AnyElysia, Elysia, type InferContext, file } from "elysia";
 import { type AppLoadContext, createRequestHandler } from "react-router";
 
