@@ -1,12 +1,10 @@
 import { join } from "node:path";
-import { join as joinPosix } from "node:path/posix";
 import { staticPlugin } from "@elysiajs/static";
 import { createRequestHandler } from "@remix-run/node";
 import type { AppLoadContext } from "@remix-run/node";
-import { type AnyElysia, Elysia, type InferContext, file } from "elysia";
+import { type AnyElysia, Elysia } from "elysia";
 import type { ViteDevServer } from "vite";
 import type { PluginOptions } from "./types";
-import { universalGlob } from "./utils";
 
 /**
  * Initializes and configures an Elysia server with Remix integration.

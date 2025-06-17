@@ -1,11 +1,10 @@
 import { join } from "node:path";
-import { type AnyElysia, Elysia, type InferContext, file } from "elysia";
+import { type AnyElysia, Elysia } from "elysia";
 import { type AppLoadContext, createRequestHandler } from "react-router";
 
 import { staticPlugin } from "@elysiajs/static";
 import type { ViteDevServer } from "vite";
 import type { PluginOptions } from "./types";
-import { universalGlob } from "./utils";
 
 /**
  * Initializes and configures an Elysia server with React Router integration.
