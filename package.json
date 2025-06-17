@@ -1,6 +1,6 @@
 {
 	"name": "elysia-react-router",
-	"version": "0.3.1",
+	"version": "0.4.0",
 	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"description": "Use React Router v7 or Remix with Elysia with HMR support!",
