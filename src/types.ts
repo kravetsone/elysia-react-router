@@ -1,3 +1,4 @@
+import type { staticPlugin } from "@elysiajs/static";
 import type { ElysiaFile } from "elysia";
 import type { Context } from "elysia/context";
 import type { InlineConfig } from "vite";
@@ -51,11 +52,14 @@ export interface PluginOptions<T> {
 	 * Options for production mode (serving static assets and performs SSR)
 	 */
 	production?: {
+		assets?: StaticPluginOptions | false;
+
 		/**
 		 * A function to change the response of static assets. (For example, for `cache-control` headers)
 		 */
-		wrapStaticResponse?: (
-			response: ElysiaFile,
-		) => MaybePromise<Response | ElysiaFile>;
+		/** @deprecated (removed) in favour of `assets` option */
+		wrapStaticResponse?: never;
 	};
 }
+
+export type StaticPluginOptions = Parameters<typeof staticPlugin>[0];

@@ -2,10 +2,10 @@ import { join } from "node:path";
 import { type AnyElysia, Elysia, type InferContext, file } from "elysia";
 import { type AppLoadContext, createRequestHandler } from "react-router";
 
+import { staticPlugin } from "@elysiajs/static";
 import type { ViteDevServer } from "vite";
 import type { PluginOptions } from "./types";
 import { universalGlob } from "./utils";
-import { staticPlugin } from '@elysiajs/static'
 
 /**
  * Initializes and configures an Elysia server with React Router integration.
@@ -57,42 +57,33 @@ export async function reactRouter(
 		});
 	}
 
-	let hooks = {};
-
 	if (vite) {
-		elysia.use((await import('elysia-connect-middleware')).connect(vite.middlewares))
-	} else {
 		elysia.use(
-		        staticPlugin({
-		            prefix: '/assets',
-		            assets: 'build/client/assets',
-		            headers: { 'Cache-Control': 'public, max-age=31536000, immutable' },
-			}),
-		).use(
+			(await import("elysia-connect-middleware")).connect(vite.middlewares),
+		);
+	} else if (options?.production?.assets !== false) {
+		elysia.use(
 			staticPlugin({
-			    prefix: '/',
-            		    assets: 'build/client',
-            		    headers: { 'Cache-Control': 'public, max-age=3600' },
+				prefix: "/",
+				assets: "build/client",
+				headers: { "Cache-Control": "public, max-age=31536000, immutable" },
+				...options?.production?.assets,
 			}),
-		)
+		);
 	}
 
-	elysia.all(
-		"*",
-		async context => {
-			const handler = createRequestHandler(
-				vite
-					? await vite.ssrLoadModule("virtual:react-router/server-build")
-					: await import(serverBuildPath),
-				mode,
-			);
+	elysia.all("*", async function processReactRouterSSR(context) {
+		const handler = createRequestHandler(
+			vite
+				? await vite.ssrLoadModule("virtual:react-router/server-build")
+				: await import(serverBuildPath),
+			mode,
+		);
 
-			const loadContext = await options?.getLoadContext?.(context);
+		const loadContext = await options?.getLoadContext?.(context);
 
-			return handler(context.request, loadContext);
-		},
-		hooks,
-	);
+		return handler(context.request, loadContext);
+	});
 
 	return elysia;
 }
