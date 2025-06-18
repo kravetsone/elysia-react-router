@@ -82,7 +82,7 @@ export async function reactRouter(
 		const loadContext = await options?.getLoadContext?.(context);
 
 		return handler(context.request, loadContext);
-	});
+	}, { parse: 'none' });
 
 	return elysia;
 }
