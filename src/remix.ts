@@ -69,25 +69,29 @@ export async function remix(
 		elysia.use(
 			staticPlugin({
 				prefix: "/",
-				assets: "build/client",
+				assets: join(buildDirectory, "client"),
 				headers: { "Cache-Control": "public, max-age=31536000, immutable" },
 				...options?.production?.assets,
 			}),
 		);
 	}
 
-	elysia.all("*", async function processRemixSSR(context) {
-		const handler = createRequestHandler(
-			vite
-				? await vite.ssrLoadModule("virtual:remix/server-build")
-				: await import(serverBuildPath),
-			mode,
-		);
+	elysia.all(
+		"*",
+		async function processRemixSSR(context) {
+			const handler = createRequestHandler(
+				vite
+					? await vite.ssrLoadModule("virtual:remix/server-build")
+					: await import(serverBuildPath),
+				mode,
+			);
 
-		const loadContext = await options?.getLoadContext?.(context);
+			const loadContext = await options?.getLoadContext?.(context);
 
-		return handler(context.request, loadContext);
-	});
+			return handler(context.request, loadContext);
+		},
+		{ parse: "none" },
+	);
 
 	return elysia;
 }
