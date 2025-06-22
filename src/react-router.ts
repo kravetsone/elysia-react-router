@@ -64,7 +64,7 @@ export async function reactRouter(
 		elysia.use(
 			staticPlugin({
 				prefix: "/",
-				assets: join(buildDirectory, "client"),
+				assets: join(options?.buildDirectory ?? "build", "client"),
 				headers: { "Cache-Control": "public, max-age=31536000, immutable" },
 				...options?.production?.assets,
 			}),
