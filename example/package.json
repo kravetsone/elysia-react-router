@@ -11,22 +11,22 @@
 		"start": "NODE_ENV=production bun ./server/index.ts"
 	},
 	"dependencies": {
-		"@react-router/fs-routes": "^7.6.0",
-		"@tailwindcss/vite": "^4.1.6",
-		"elysia": "^1.3.1",
-		"elysia-react-router": "^0.3.0",
+		"@react-router/fs-routes": "^7.6.2",
+		"@tailwindcss/vite": "^4.1.10",
+		"elysia": "^1.3.5",
+		"elysia-react-router": "^0.4.2",
 		"isbot": "^5.1.28",
 		"react": "^19.1.0",
 		"react-dom": "^19.1.0",
-		"react-router": "^7.6.0",
-		"tailwindcss": "^4.1.6"
+		"react-router": "^7.6.2",
+		"tailwindcss": "^4.1.10"
 	},
 	"devDependencies": {
-		"@react-router/dev": "^7.6.0",
-		"@remix-run/eslint-config": "^2.16.6",
-		"@types/react": "^19.1.4",
-		"@types/react-dom": "^19.1.5",
-		"eslint": "^9.26.0",
+		"@react-router/dev": "^7.6.2",
+		"@remix-run/eslint-config": "^2.16.8",
+		"@types/react": "^19.1.8",
+		"@types/react-dom": "^19.1.6",
+		"eslint": "^9.29.0",
 		"prettier": "^3.5.3",
 		"typescript": "^5.8.3",
 		"vite": "^6.3.5",
