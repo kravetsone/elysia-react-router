@@ -65,7 +65,7 @@ export async function reactRouter(
 			staticPlugin({
 				prefix: "/",
 				assets: join(options?.buildDirectory ?? "build", "client"),
-				headers: { "Cache-Control": "public, max-age=31536000, immutable" },
+				maxAge: 31536000,
 				...options?.production?.assets,
 			}),
 		);
