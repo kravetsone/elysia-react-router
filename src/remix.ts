@@ -70,7 +70,7 @@ export async function remix(
 			staticPlugin({
 				prefix: "/",
 				assets: join(options?.buildDirectory ?? "build", "client"),
-				headers: { "Cache-Control": "public, max-age=31536000, immutable" },
+				maxAge: 60 * 60 * 24 * 30,
 				...options?.production?.assets,
 			}),
 		);
