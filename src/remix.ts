@@ -70,7 +70,7 @@ export async function remix(
 			staticPlugin({
 				prefix: "/",
 				assets: join(options?.buildDirectory ?? "build", "client"),
-				maxAge: 60 * 60 * 24 * 30,
+				maxAge: 31536000,
 				...options?.production?.assets,
 			}),
 		);
