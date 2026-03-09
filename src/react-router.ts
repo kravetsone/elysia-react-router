@@ -16,7 +16,7 @@ import type { PluginOptions } from "./types";
  *
  * @example
  * ```typescript
- * import { reactRouter } from "elysia-remix";
+ * import { reactRouter } from "elysia-react-router";
  *
  * new Elysia()
  *     .use(await reactRouter())
@@ -37,11 +37,6 @@ export async function reactRouter(
         options?.serverBuildFile ?? "index.js",
     );
 
-    const elysia = new Elysia({
-        name: "elysia-react-router",
-        seed: options,
-    });
-
     let vite: ViteDevServer | undefined;
 
     if (mode !== "production") {
@@ -56,39 +51,33 @@ export async function reactRouter(
         });
     }
 
-    if (vite) {
-        elysia.use(
-            (await import("elysia-connect-middleware")).connect(vite.middlewares),
-        );
-    } else if (options?.production?.assets !== false) {
-        elysia.use(
-            staticPlugin({
-                prefix: "/",
-                assets: join(buildDir, "client"),
-                maxAge: 31536000,
-                ...options?.production?.assets,
-            }),
-        );
-    }
+    const instance = vite ?
+        (await import("elysia-connect-middleware")).connect(vite.middlewares)
+        : options?.production?.assets !== false ? staticPlugin({
+            prefix: "/",
+            assets: join(buildDir, "client"),
+            maxAge: 31536000,
+            ...options?.production?.assets,
+        }) : false;
 
     let cachedHandler: ReturnType<typeof createRequestHandler> | undefined;
+    const serverModule = vite
+        ? await vite.ssrLoadModule("virtual:react-router/server-build")
+        : await import(serverBuildPath);
 
-    elysia.all(
-        "*",
-        async function processReactRouterSSR(context) {
-            if (!cachedHandler) {
-                const serverModule = vite
-                    ? await vite.ssrLoadModule("virtual:react-router/server-build")
-                    : await import(serverBuildPath);
-                cachedHandler = createRequestHandler(serverModule, mode);
-            }
+    return new Elysia({ name: "elysia-react-router", seed: options })
+        .use(instance)
+        .all(
+            "*",
+            async function processReactRouterSSR(context) {
+                if (!cachedHandler) {
+                    cachedHandler = createRequestHandler(serverModule, mode);
+                }
 
-            const loadContext = await options?.getLoadContext?.(context);
+                const loadContext = await options?.getLoadContext?.(context);
 
-            return cachedHandler(context.request, loadContext);
-        },
-        { parse: "none" },
-    );
-
-    return elysia;
+                return cachedHandler(context.request, loadContext);
+            },
+            { parse: "none" },
+        );
 }
