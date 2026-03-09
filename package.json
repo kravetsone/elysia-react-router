@@ -1,67 +1,75 @@
 {
-	"name": "elysia-react-router",
-	"version": "0.4.2",
-	"module": "./dist/index.js",
-	"types": "./dist/index.d.ts",
-	"description": "Use React Router v7 or Remix with Elysia with HMR support!",
-	"author": {
-		"name": "Kravets",
-		"url": "https://github.com/kravetsone"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/kravetsone/elysia-react-router.git"
-	},
-	"homepage": "https://github.com/kravetsone/elysia-react-router",
-	"readme": "https://github.com/kravetsone/elysia-react-router",
-	"keywords": ["elysia", "elysia-plugin", "vite", "remix", "react-router"],
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"import": "./dist/index.js"
-		},
-		"./remix": {
-			"types": "./dist/remix.d.ts",
-			"import": "./dist/remix.js"
-		},
-		"./react-router": {
-			"types": "./dist/react-router.d.ts",
-			"import": "./dist/react-router.js"
-		}
-	},
-	"type": "module",
-	"scripts": {
-		"prepublishOnly": "bun type && bunx pkgroll",
-		"type": "bunx tsc --noEmit"
-	},
-	"devDependencies": {
-		"@elysiajs/static": "^1.3.0",
-		"@biomejs/biome": "^1.9.4",
-		"@types/bun": "^1.2.13",
-		"@types/node": "^22.15.18",
-		"elysia-connect-middleware": "^0.0.6",
-		"pkgroll": "^2.12.2",
-		"typescript": "^5.8.3",
-		"react-router": "^7.6.0",
-		"@remix-run/node": "^2.16.6"
-	},
-	"peerDependencies": {
-		"elysia": "^1.3.1",
-		"vite": "^6.3.5",
-		"react-router": "^7.1.1",
-		"@remix-run/node": "^2.14.0"
-	},
-	"peerDependenciesMeta": {
-		"@remix-run/node": {
-			"optional": true
-		},
-		"react-router": {
-			"optional": true
-		}
-	},
-	"dependencies": {
-		"connect-to-web": "^0.0.3"
-	},
-	"license": "MIT",
-	"files": ["dist"]
+  "name": "elysia-react-router",
+  "version": "0.4.2",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "description": "Use React Router v7 or Remix with Elysia with HMR support!",
+  "author": {
+    "name": "Kravets",
+    "url": "https://github.com/kravetsone"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kravetsone/elysia-react-router.git"
+  },
+  "homepage": "https://github.com/kravetsone/elysia-react-router",
+  "readme": "https://github.com/kravetsone/elysia-react-router",
+  "keywords": [
+    "elysia",
+    "elysia-plugin",
+    "vite",
+    "remix",
+    "react-router"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./remix": {
+      "types": "./dist/remix.d.ts",
+      "import": "./dist/remix.js"
+    },
+    "./react-router": {
+      "types": "./dist/react-router.d.ts",
+      "import": "./dist/react-router.js"
+    }
+  },
+  "type": "module",
+  "scripts": {
+    "prepublishOnly": "bun type && bunx pkgroll",
+    "type": "bunx tsc --noEmit"
+  },
+  "devDependencies": {
+    "@elysiajs/static": "^1.4.7",
+    "@biomejs/biome": "^1.9.4",
+    "@types/bun": "^1.3.10",
+    "@types/node": "^25.3.5",
+    "elysia-connect-middleware": "^0.0.6",
+    "pkgroll": "^2.27.0",
+    "typescript": "^5.9.3",
+    "react-router": "^7.13.1",
+    "@remix-run/node": "^2.17.4"
+  },
+  "peerDependencies": {
+    "elysia": "^1.4.27",
+    "vite": "^7.3.1",
+    "react-router": "^7.13.1",
+    "@remix-run/node": "^2.17.4"
+  },
+  "peerDependenciesMeta": {
+    "@remix-run/node": {
+      "optional": true
+    },
+    "react-router": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "connect-to-web": "^0.0.3"
+  },
+  "license": "MIT",
+  "files": [
+    "dist"
+  ]
 }

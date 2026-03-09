@@ -35,7 +35,8 @@ export async function remix(
 ): Promise<AnyElysia> {
 	const cwd = process.env.REMIX_ROOT ?? process.cwd();
 	const mode = options?.mode ?? process.env.NODE_ENV ?? "development";
-	const buildDirectory = join(cwd, options?.buildDirectory ?? "build");
+	const buildDir = options?.buildDirectory ?? "build";
+	const buildDirectory = join(cwd, buildDir);
 	const serverBuildPath = join(
 		buildDirectory,
 		"server",
@@ -69,26 +70,28 @@ export async function remix(
 		elysia.use(
 			staticPlugin({
 				prefix: "/",
-				assets: join(options?.buildDirectory ?? "build", "client"),
+				assets: join(buildDir, "client"),
 				maxAge: 31536000,
 				...options?.production?.assets,
 			}),
 		);
 	}
 
+	let cachedHandler: ReturnType<typeof createRequestHandler> | undefined;
+
 	elysia.all(
 		"*",
 		async function processRemixSSR(context) {
-			const handler = createRequestHandler(
-				vite
+			if (!cachedHandler) {
+				const serverModule = vite
 					? await vite.ssrLoadModule("virtual:remix/server-build")
-					: await import(serverBuildPath),
-				mode,
-			);
+					: await import(serverBuildPath);
+				cachedHandler = createRequestHandler(serverModule, mode);
+			}
 
 			const loadContext = await options?.getLoadContext?.(context);
 
-			return handler(context.request, loadContext);
+			return cachedHandler(context.request, loadContext);
 		},
 		{ parse: "none" },
 	);
