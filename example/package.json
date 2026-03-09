@@ -14,7 +14,7 @@
     "@react-router/fs-routes": "^7.13.1",
     "@tailwindcss/vite": "^4.2.1",
     "elysia": "^1.4.27",
-    "elysia-react-router": "^0.3.1",
+    "elysia-react-router": "^0.4.4",
     "isbot": "^5.1.35",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
@@ -29,7 +29,7 @@
     "eslint": "^9.39.4",
     "prettier": "^3.8.1",
     "typescript": "^5.9.3",
-    "vite": "^6.4.1",
+    "vite": "^7.3.1",
     "vite-tsconfig-paths": "^5.1.4"
   }
 }

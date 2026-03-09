@@ -1,8 +1,8 @@
 import { join } from "node:path";
-import { staticPlugin } from "@elysiajs/static";
+import { type AnyElysia, Elysia } from "elysia";
 import { createRequestHandler } from "@remix-run/node";
 import type { AppLoadContext } from "@remix-run/node";
-import { type AnyElysia, Elysia } from "elysia";
+import { staticPlugin } from "@elysiajs/static";
 import type { ViteDevServer } from "vite";
 import type { PluginOptions } from "./types";
 
@@ -20,7 +20,7 @@ import type { PluginOptions } from "./types";
  *
  * @example
  * ```typescript
- * import { remix } from "elysia-remix";
+ * import { remix } from "elysia-react-router/remix";
  *
  * new Elysia()
  *     .use(await remix())
@@ -43,11 +43,6 @@ export async function remix(
 		options?.serverBuildFile ?? "index.js",
 	);
 
-	const elysia = new Elysia({
-		name: "elysia-remix",
-		seed: options,
-	});
-
 	let vite: ViteDevServer | undefined;
 
 	if (mode !== "production") {
@@ -62,39 +57,33 @@ export async function remix(
 		});
 	}
 
-	if (vite) {
-		elysia.use(
-			(await import("elysia-connect-middleware")).connect(vite.middlewares),
-		);
-	} else if (options?.production?.assets !== false) {
-		elysia.use(
-			staticPlugin({
-				prefix: "/",
-				assets: join(buildDir, "client"),
-				maxAge: 31536000,
-				...options?.production?.assets,
-			}),
-		);
-	}
+	const instance = vite ?
+		(await import("elysia-connect-middleware")).connect(vite.middlewares)
+		: options?.production?.assets !== false ? staticPlugin({
+			prefix: "/",
+			assets: join(buildDir, "client"),
+			maxAge: 31536000,
+			...options?.production?.assets,
+		}) : false;
 
 	let cachedHandler: ReturnType<typeof createRequestHandler> | undefined;
+	const serverModule = vite
+		? await vite.ssrLoadModule("virtual:remix/server-build")
+		: await import(serverBuildPath);
 
-	elysia.all(
-		"*",
-		async function processRemixSSR(context) {
-			if (!cachedHandler) {
-				const serverModule = vite
-					? await vite.ssrLoadModule("virtual:remix/server-build")
-					: await import(serverBuildPath);
-				cachedHandler = createRequestHandler(serverModule, mode);
-			}
+	return new Elysia({ name: "elysia-remix", seed: options })
+		.use(instance)
+		.all(
+			"*",
+			async function processRemixSSR(context) {
+				if (!cachedHandler) {
+					cachedHandler = createRequestHandler(serverModule, mode);
+				}
 
-			const loadContext = await options?.getLoadContext?.(context);
+				const loadContext = await options?.getLoadContext?.(context);
 
-			return cachedHandler(context.request, loadContext);
-		},
-		{ parse: "none" },
-	);
-
-	return elysia;
+				return cachedHandler(context.request, loadContext);
+			},
+			{ parse: "none" },
+		);
 }

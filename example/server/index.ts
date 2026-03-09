@@ -1,6 +1,6 @@
 import { Elysia } from "elysia";
-import { reactRouter } from "../../src";
-// import { reactRouter } from "elysia-react-router";
+import { reactRouter } from "elysia-react-router";
+// import { reactRouter } from "../../src";
 
 const port = Number(process.env.PORT) || 3000;
 
