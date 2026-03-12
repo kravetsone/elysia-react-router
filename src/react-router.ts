@@ -15,7 +15,7 @@ import type { PluginOptions } from "./types";
  * This function sets up the Elysia server to handle React Router SSR (Server-Side Rendering)
  * and optionally integrates Vite for development mode.
  *
- * @param {PluginOptions<T>} [options] - Optional configuration options for the plugin.
+ * @param {PluginOptions<RouterContextProvider | AppLoadContext>} [options] - Optional configuration options for the plugin.
  * @returns {Promise<Elysia>} - A promise that resolves to the configured Elysia instance.
  *
  * @example
