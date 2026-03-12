@@ -1,8 +1,8 @@
-import { join } from "node:path";
-import { type AnyElysia, Elysia } from "elysia";
-import { createRequestHandler } from "@remix-run/node";
-import type { AppLoadContext } from "@remix-run/node";
 import { staticPlugin } from "@elysiajs/static";
+import type { AppLoadContext } from "@remix-run/node";
+import { createRequestHandler } from "@remix-run/node";
+import { type AnyElysia, Elysia } from "elysia";
+import { join } from "node:path";
 import type { ViteDevServer } from "vite";
 import type { PluginOptions } from "./types";
 
@@ -31,59 +31,56 @@ import type { PluginOptions } from "./types";
  * @see https://remix.run/blog/incremental-path-to-react-19
  */
 export async function remix(
-	options?: PluginOptions<AppLoadContext>,
+  options?: PluginOptions<AppLoadContext>,
 ): Promise<AnyElysia> {
-	const cwd = process.env.REMIX_ROOT ?? process.cwd();
-	const mode = options?.mode ?? process.env.NODE_ENV ?? "development";
-	const buildDir = options?.buildDirectory ?? "build";
-	const buildDirectory = join(cwd, buildDir);
-	const serverBuildPath = join(
-		buildDirectory,
-		"server",
-		options?.serverBuildFile ?? "index.js",
-	);
+  const cwd = process.env.REMIX_ROOT ?? process.cwd();
+  const mode = options?.mode ?? process.env.NODE_ENV ?? "development";
+  const buildDir = options?.buildDirectory ?? "build";
+  const buildDirectory = join(cwd, buildDir);
+  const serverBuildPath = join(
+    buildDirectory,
+    "server",
+    options?.serverBuildFile ?? "index.js",
+  );
 
-	let vite: ViteDevServer | undefined;
+  let vite: ViteDevServer | undefined;
 
-	if (mode !== "production") {
-		vite = await import("vite").then((vite) => {
-			return vite.createServer({
-				...options?.vite,
-				server: {
-					...options?.vite?.server,
-					middlewareMode: true,
-				},
-			});
-		});
-	}
+  if (mode !== "production") {
+    vite = await import("vite").then((vite) => {
+      return vite.createServer({
+        ...options?.vite,
+        server: {
+          ...options?.vite?.server,
+          middlewareMode: true,
+        },
+      });
+    });
+  }
 
-	const instance = vite ?
-		(await import("elysia-connect-middleware")).connect(vite.middlewares)
-		: options?.production?.assets !== false ? staticPlugin({
-			prefix: "/",
-			assets: join(buildDir, "client"),
-			maxAge: 31536000,
-			...options?.production?.assets,
-		}) : false;
+  const instance = vite
+    ? (await import("elysia-connect-middleware")).connect(vite.middlewares)
+    : options?.production?.assets !== false
+      ? staticPlugin({
+          prefix: "/",
+          assets: join(buildDir, "client"),
+          maxAge: 31536000,
+          ...options?.production?.assets,
+        })
+      : false;
 
-	let cachedHandler: ReturnType<typeof createRequestHandler> | undefined;
-	const serverModule = vite
-		? await vite.ssrLoadModule("virtual:remix/server-build")
-		: await import(serverBuildPath);
+  const serverModule = vite
+    ? await vite.ssrLoadModule("virtual:remix/server-build")
+    : await import(serverBuildPath);
 
-	return new Elysia({ name: "elysia-remix", seed: options })
-		.use(instance)
-		.all(
-			"*",
-			async function processRemixSSR(context) {
-				if (!cachedHandler) {
-					cachedHandler = createRequestHandler(serverModule, mode);
-				}
+  const handler = createRequestHandler(serverModule, mode);
 
-				const loadContext = await options?.getLoadContext?.(context);
+  return new Elysia({ name: "elysia-remix", seed: options }).use(instance).all(
+    "*",
+    async function processRemixSSR(context) {
+      const loadContext = await options?.getLoadContext?.(context);
 
-				return cachedHandler(context.request, loadContext);
-			},
-			{ parse: "none" },
-		);
+      return handler(context.request, loadContext);
+    },
+    { parse: "none" },
+  );
 }
