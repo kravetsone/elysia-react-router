@@ -1,35 +1,35 @@
 {
-  "name": "elysia-react-router",
-  "private": true,
-  "sideEffects": false,
-  "type": "module",
-  "scripts": {
-    "build": "react-router build",
-    "dev": "bun --watch ./server/index.ts",
-    "format": "prettier --ignore-path .gitignore --ignore-unknown --cache --cache-location node_modules/.cache/prettiercache --write .",
-    "lint": "eslint --ignore-path .gitignore --no-error-on-unmatched-pattern --cache --cache-location node_modules/.cache/eslint --fix .",
-    "start": "NODE_ENV=production bun ./server/index.ts"
-  },
-  "dependencies": {
-    "@react-router/fs-routes": "^7.13.1",
-    "@tailwindcss/vite": "^4.2.1",
-    "elysia": "^1.4.27",
-    "elysia-react-router": "^0.4.4",
-    "isbot": "^5.1.35",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "react-router": "^7.13.1",
-    "tailwindcss": "^4.2.1"
-  },
-  "devDependencies": {
-    "@react-router/dev": "^7.13.1",
-    "@remix-run/eslint-config": "^2.17.4",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "eslint": "^9.39.4",
-    "prettier": "^3.8.1",
-    "typescript": "^5.9.3",
-    "vite": "^7.3.1",
-    "vite-tsconfig-paths": "^5.1.4"
-  }
+    "name": "elysia-react-router",
+    "private": true,
+    "sideEffects": false,
+    "type": "module",
+    "scripts": {
+        "build": "react-router build",
+        "dev": "bun --watch ./server/index.ts",
+        "format": "prettier --ignore-path .gitignore --ignore-unknown --cache --cache-location node_modules/.cache/prettiercache --write .",
+        "lint": "eslint --ignore-path .gitignore --no-error-on-unmatched-pattern --cache --cache-location node_modules/.cache/eslint --fix .",
+        "start": "NODE_ENV=production bun ./server/index.ts"
+    },
+    "dependencies": {
+        "@react-router/fs-routes": "^7.13.1",
+        "@tailwindcss/vite": "^4.2.1",
+        "elysia": "^1.4.27",
+        "elysia-react-router": "^0.4.4",
+        "isbot": "^5.1.35",
+        "react": "^19.2.4",
+        "react-dom": "^19.2.4",
+        "react-router": "^7.13.1",
+        "tailwindcss": "^4.2.1"
+    },
+    "devDependencies": {
+        "@react-router/dev": "^7.13.1",
+        "@remix-run/eslint-config": "^2.17.4",
+        "@types/react": "^19.2.14",
+        "@types/react-dom": "^19.2.3",
+        "eslint": "^9.39.4",
+        "prettier": "^3.8.1",
+        "typescript": "^5.9.3",
+        "vite": "^7.3.1",
+        "vite-tsconfig-paths": "^5.1.4"
+    }
 }
