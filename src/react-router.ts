@@ -1,10 +1,10 @@
-import { staticPlugin } from "@elysiajs/static";
-import { Elysia, type AnyElysia } from "elysia";
 import { join } from "node:path";
+import { staticPlugin } from "@elysiajs/static";
+import { type AnyElysia, Elysia } from "elysia";
 import {
-    createRequestHandler,
-    RouterContextProvider,
-    type AppLoadContext,
+	type AppLoadContext,
+	type RouterContextProvider,
+	createRequestHandler,
 } from "react-router";
 import type { ViteDevServer } from "vite";
 import type { PluginOptions } from "./types";
@@ -29,59 +29,59 @@ import type { PluginOptions } from "./types";
  * ```
  */
 export async function reactRouter(
-    options?: PluginOptions<RouterContextProvider | AppLoadContext>,
+	options?: PluginOptions<RouterContextProvider | AppLoadContext>,
 ): Promise<AnyElysia> {
-    const cwd = process.env.REMIX_ROOT ?? process.cwd();
-    const mode = options?.mode ?? process.env.NODE_ENV ?? "development";
-    const buildDir = options?.buildDirectory ?? "build";
-    const buildDirectory = join(cwd, buildDir);
-    const serverBuildPath = join(
-        buildDirectory,
-        "server",
-        options?.serverBuildFile ?? "index.js",
-    );
+	const cwd = process.env.REMIX_ROOT ?? process.cwd();
+	const mode = options?.mode ?? process.env.NODE_ENV ?? "development";
+	const buildDir = options?.buildDirectory ?? "build";
+	const buildDirectory = join(cwd, buildDir);
+	const serverBuildPath = join(
+		buildDirectory,
+		"server",
+		options?.serverBuildFile ?? "index.js",
+	);
 
-    let vite: ViteDevServer | undefined;
+	let vite: ViteDevServer | undefined;
 
-    if (mode !== "production") {
-        vite = await import("vite").then((vite) => {
-            return vite.createServer({
-                ...options?.vite,
-                server: {
-                    ...options?.vite?.server,
-                    middlewareMode: true,
-                },
-            });
-        });
-    }
+	if (mode !== "production") {
+		vite = await import("vite").then((vite) => {
+			return vite.createServer({
+				...options?.vite,
+				server: {
+					...options?.vite?.server,
+					middlewareMode: true,
+				},
+			});
+		});
+	}
 
-    const instance = vite
-        ? (await import("elysia-connect-middleware")).connect(vite.middlewares)
-        : options?.production?.assets !== false
-          ? staticPlugin({
-                prefix: "/",
-                assets: join(buildDir, "client"),
-                maxAge: 31536000,
-                ...options?.production?.assets,
-            })
-          : false;
+	const instance = vite
+		? (await import("elysia-connect-middleware")).connect(vite.middlewares)
+		: options?.production?.assets !== false
+			? staticPlugin({
+					prefix: "/",
+					assets: join(buildDir, "client"),
+					maxAge: 31536000,
+					...options?.production?.assets,
+				})
+			: false;
 
-    const serverModule = vite
-        ? await vite.ssrLoadModule("virtual:react-router/server-build")
-        : await import(serverBuildPath);
+	const serverModule = vite
+		? await vite.ssrLoadModule("virtual:react-router/server-build")
+		: await import(serverBuildPath);
 
-    const handler = createRequestHandler(serverModule, mode);
+	const handler = createRequestHandler(serverModule, mode);
 
-    return new Elysia({ name: "elysia-react-router", seed: options })
-        .use(instance)
-        .all(
-            "*",
-            async function processReactRouterSSR(context) {
-                const loadContext = await options?.getLoadContext?.(context);
+	return new Elysia({ name: "elysia-react-router", seed: options })
+		.use(instance)
+		.all(
+			"*",
+			async function processReactRouterSSR(context) {
+				const loadContext = await options?.getLoadContext?.(context);
 
-                // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-                return handler(context.request, loadContext as any);
-            },
-            { parse: "none" },
-        );
+				// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+				return handler(context.request, loadContext as any);
+			},
+			{ parse: "none" },
+		);
 }

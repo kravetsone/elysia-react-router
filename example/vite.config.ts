@@ -11,6 +11,7 @@ export default defineConfig(({ command }) => ({
                   alias: {
                       "react-dom/server": "react-dom/server.node",
                   },
+                  tsconfigPaths: true
               }
-            : undefined,
+            : { tsconfigPaths: true },
 }));
