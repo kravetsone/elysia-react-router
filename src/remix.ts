@@ -69,7 +69,7 @@ export async function remix(
           : false;
 
     const serverModule = vite
-        ? await vite.ssrLoadModule("virtual:remix/server-build")
+        ? () => vite.ssrLoadModule("virtual:remix/server-build")
         : await import(serverBuildPath);
 
     const handler = createRequestHandler(serverModule, mode);
