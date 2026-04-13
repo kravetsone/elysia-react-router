@@ -67,7 +67,7 @@ export async function reactRouter(
 			: false;
 
 	const serverModule = vite
-		? await vite.ssrLoadModule("virtual:react-router/server-build")
+		? () => vite.ssrLoadModule("virtual:react-router/server-build")
 		: await import(serverBuildPath);
 
 	const handler = createRequestHandler(serverModule, mode);
